@@ -1,7 +1,7 @@
 import gpxpy
 import csv
 import os
-import math
+
 import pandas as pd
 from math import radians, cos, sin, asin, sqrt
 
