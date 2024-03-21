@@ -13,7 +13,7 @@
     <extensions>
      <gpxtpx:TrackPointExtension>
       <gpxtpx:atemp>24</gpxtpx:atemp>
-      <gpxtpx:hr>101</gpxtpx:hr>#
+      <gpxtpx:hr>101</gpxtpx:hr>
      </gpxtpx:TrackPointExtension>
     </extensions>
    </trkpt>
