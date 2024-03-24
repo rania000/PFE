@@ -104,4 +104,4 @@ def gpx_to_csv(fichierGpx, fichierCsv):
 
 
 gpx_to_csv("sortieVeloMatin.gpx", "SortieVeloMatin.csv")
-
+gpx_to_csv('Course_pied_dans_l_apr_s_midi.gpx',"CoursePied.csv")

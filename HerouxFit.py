@@ -1,21 +1,11 @@
 import csv
 from datetime import datetime, timezone
-import dash
-from dash import dcc, html
+import folium
 import plotly.express as px
 import numpy as np
-import folium
-import pandas as pd
-import dash_bootstrap_components as dbc
-from TraitCsv import *
-
-data = pd.read_csv("SortieVeloMatin.csv")
-external_stylesheets = [dbc.themes.BOOTSTRAP]
-
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 def seconds_to_hms(seconds):
-    """Convert seconds to hours, minutes, seconds."""
+    """Convertit les secondes en heures, minutes, secondes."""
     hours = seconds // 3600
     minutes = (seconds % 3600) // 60
     seconds = seconds % 60
@@ -35,7 +25,8 @@ def plot_route_on_map(csv_path):
     # Add a Polyline connecting all points
     folium.PolyLine(coordinates, color="blue").add_to(m)
 
-    m.save("assets/map_with_route.html")  # Save the map to an HTML file
+    m.save("map_with_route.html")  # Save the map to an HTML file
+
 
 def plot_data_over_time(csv_path):
     times = []
@@ -50,7 +41,7 @@ def plot_data_over_time(csv_path):
             time_format = "%Y-%m-%d %H:%M:%S%z"
             time = datetime.strptime(time_str, time_format).replace(tzinfo=timezone.utc)
 
-            heart_rate = float(row.get("freqCardiaque", 0))
+            heart_rate = float(row.get("freqCard", 0))
             temperature = float(row.get("temperature", 0))
             elevation = float(row.get("elevation", 0))
 
@@ -80,65 +71,28 @@ def plot_data_over_time(csv_path):
         title="Elevation Over Time",
     )
 
-    return fig_hr, fig_temp, fig_elevation
+    # Show interactive plots
+    fig_hr.show()
+    fig_temp.show()
+    fig_elevation.show()
 
-def generate_layout(fig_hr, fig_temp, fig_elevation):
-    return html.Div([
-        html.H1("Fitness Dashboard", className="text-center my-4"),
-        dbc.Row([
-            dbc.Col(dcc.Graph(figure=fig_hr), width=4),
-            dbc.Col(dcc.Graph(figure=fig_temp), width=4),
-            dbc.Col(dcc.Graph(figure=fig_elevation), width=4),
-        ]),
-        html.Div(id='map-container'),
-        html.Div(id='output-container-totalDist'),
-        html.Div(id='output-container-totalTime'),
-        html.Div(id='output-container-freqMoyenne'),
-        html.Div(id='output-container-caloVelo'),
-        dcc.Store(id='data', storage_type='session', data={}),
-    ])
 
-@app.callback(
-    dash.dependencies.Output('output-container-totalDist', 'children'),
-    [dash.dependencies.Input('data', 'data')]
-)
-def update_total_distance(data):
-    return f"Total Distance: {totalDist(data)}"
+def totalDist(data):
+    dist = data["distCum"].values
+    a = dist[0]
+    b = dist[-1]
+    return b-a
 
-@app.callback(
-    dash.dependencies.Output('output-container-totalTime', 'children'),
-    [dash.dependencies.Input('data', 'data')]
-)
-def update_total_time(data):
-    return f"Total Time: {seconds_to_hms(totalTime(data))}"
+def totalTime(data):
+    b = data["tempsCum"].values
+    return b[-1]
 
-@app.callback(
-    dash.dependencies.Output('output-container-freqMoyenne', 'children'),
-    [dash.dependencies.Input('data', 'data')]
-)
-def update_average_frequency(data):
-    return f"Average Frequency: {freqMoyenne(data)} bpm"
+def freqMoyenne (data):
+    return np.sum(data["freqCard"].values) / data["freqCard"].size
 
-@app.callback(
-    dash.dependencies.Output('output-container-caloVelo', 'children'),
-    [dash.dependencies.Input('age', 'value'),
-     dash.dependencies.Input('weight', 'value'),
-     dash.dependencies.Input('data', 'data')]
-)
-def update_calories_burned(age, weight, data):
-    freqMoy = freqMoyenne(data)
-    duree = totalTime(data)
-    return f"Calories Burned: {caloVelo(age, weight, freqMoy, duree)} kcal"
+def caloVelo(age, poids, freqMoy, duree):
+    return (age * 0.2017 - poids * 0.09036 + freqMoy * 0.6309 - 55.0969) * duree / 4.184  
 
-@app.callback(
-    dash.dependencies.Output('map-container', 'children'),
-    [dash.dependencies.Input('data', 'data')]
-)
-def update_map(data):
-    plot_route_on_map("SortieVeloMatin.csv")
-    return html.Iframe(srcDoc=open('assets/map_with_route.html', 'r').read(), width='100%', height='600')
+def caloRun(poids,duree,MET=11.5):
+    return poids * (duree / 3600) * MET
 
-if __name__ == '__main__':
-    fig_hr, fig_temp, fig_elevation = plot_data_over_time("SortieVeloMatin.csv")
-    app.layout = generate_layout(fig_hr, fig_temp, fig_elevation)
-    app.run_server(debug=True)

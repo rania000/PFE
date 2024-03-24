@@ -1,0 +1,63 @@
+/* styles.css */
+
+/* Body styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header styles */
+.header {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 20px;
+    text-align: center;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 36px;
+}
+
+/* Container styles */
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* Section styles */
+.section {
+    margin-bottom: 40px;
+}
+
+/* Graph styles */
+.graph-container {
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Output container styles */
+.output-container {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Slider styles */
+.slider-container {
+    margin-top: 20px;
+}
+
+.slider-label {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+/* Footer styles */
+
