@@ -23,27 +23,21 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     lon1 = radians(lon1)
     lat2 = radians(lat2)
     lon2 = radians(lon2)
-
     # Calculer les écarts entre les coordonnées
     dlat = lat2 - lat1
     dlon = lon2 - lon1
-
     # Formule haversine
     a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
-
     # Rayon de la Terre en kilomètres (approximatif)
     radius_earth_km = 6371.0
-
     # Calculer la distance
     distance = radius_earth_km * c
-
     return distance
 
 def gpx_to_csv(fichierGpx, fichierCsv):
     with open(fichierGpx, "r") as gpx_file:
         gpx = gpxpy.parse(gpx_file)
-
 
     with open(fichierCsv, "w", newline="") as csv_file:
         csv_writer = csv.writer(csv_file)
